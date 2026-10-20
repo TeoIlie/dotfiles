@@ -1,102 +1,36 @@
-"$schema" = 'https://starship.rs/config-schema.json'
+add_newline = true
+command_timeout = 200
+format = "[$directory$git_branch$git_status]($style)$python$character"
 
-# Tokyo Night palette: same names and colours as the @tn_* vars in tmux.conf
-palette = "tokyo_night"
-
-format = """
-[░▒▓](lilac)\
-$os\
-[](bg:blue fg:lilac)\
-$directory\
-[](fg:blue bg:slate)\
-$git_branch\
-$git_status\
-[](fg:slate bg:navy)\
-$nodejs\
-$bun\
-$rust\
-$golang\
-$php\
-$python\
-[](fg:navy bg:ink)\
-$time\
-[ ](fg:ink)\
-\n$character"""
+[character]
+error_symbol = "[✗](bold cyan)"
+success_symbol = "[❯](bold cyan)"
 
 [directory]
-style = "fg:text bg:blue"
-format = "[ $path ]($style)"
-truncation_length = 3
+truncation_length = 2
 truncation_symbol = "…/"
-
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
+repo_root_style = "bold cyan"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
 
 [git_branch]
-symbol = ""
-style = "bg:slate"
-format = '[[ $symbol $branch ](fg:blue bg:slate)]($style)'
+format = "[$branch]($style) "
+style = "italic cyan"
 
 [git_status]
-style = "bg:slate"
-format = '[[($all_status$ahead_behind )](fg:blue bg:slate)]($style)'
-
-[nodejs]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) ](fg:blue bg:navy)]($style)'
-
-[bun]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) ](fg:blue bg:navy)]($style)'
-
-[rust]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) ](fg:blue bg:navy)]($style)'
-
-[golang]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) ](fg:blue bg:navy)]($style)'
-
-[php]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) ](fg:blue bg:navy)]($style)'
+format     = '[$all_status]($style)'
+style      = "cyan"
+ahead      = "⇡${count} "
+diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
+behind     = "⇣${count} "
+conflicted = " "
+up_to_date = " "
+untracked  = "? "
+modified   = " "
+stashed    = ""
+staged     = ""
+renamed    = ""
+deleted    = ""
 
 [python]
-symbol = ""
-style = "bg:navy"
-format = '[[ $symbol ($version) (\($virtualenv\) )](fg:blue bg:navy)]($style)'
-
-[time]
-disabled = false
-time_format = "%R" # Hour:Minute Format
-style = "bg:ink"
-format = '[[  $time ](fg:subtle bg:ink)]($style)'
-
-[os]
-style = "bg:lilac fg:dark"
-format = "[ $symbol ]($style)"
-disabled = false
-
-[os.symbols]
-Ubuntu = "󰕈"
-Macos = "󰀵"
-Linux = "󰌽"
-Arch = "󰣇"
-
-[palettes.tokyo_night]
-text = "#e3e5e5"
-subtle = "#a0a9cb"
-dark = "#090c0c"
-lilac = "#a3aed2"
-blue = "#769ff0"
-slate = "#394260"
-navy = "#212736"
-ink = "#1d2230"
+format = '[($virtualenv) ]($style)'
+style = "bold yellow"

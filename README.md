@@ -7,10 +7,6 @@ The real files live in this repo. `install.sh` symlinks each one to where its
 program expects it (the `LINKS` list at the top of the script shows what goes
 where), so editing either path edits the same file.
 
-tmux and starship share the Tokyo Night colours: `@tn_*` in `tmux.conf` and
-`[palettes.tokyo_night]` in `starship.toml` use the same names, so change a
-colour in both.
-
 ## Supported systems
 
 Everything here should work on these three:
@@ -28,7 +24,7 @@ three.
 1. Install the dependencies:
    - [tmux](https://github.com/tmux/tmux) 3.2+ and [starship](https://starship.rs)
    - A [Nerd Font](https://www.nerdfonts.com) set as your terminal font (for the
-     rounded segment caps and icons)
+     icons in the tmux status bar and the prompt's git status)
    - A clipboard tool so tmux copies reach the system clipboard: `xclip` on X11,
      `wl-clipboard` on Wayland (macOS has `pbcopy` built in). `tmux.conf` picks
      whichever is available. Without one, as over SSH, tmux falls back to OSC 52,
