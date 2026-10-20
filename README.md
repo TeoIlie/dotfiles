@@ -14,6 +14,20 @@ The real files live in this repo. `install.sh` creates symlinks so each program
 finds its config where it expects it, which means editing either path edits the
 same file.
 
+## Supported systems
+
+Everything here should work on these three:
+
+- **Ubuntu** (GNOME, X11 or Wayland)
+- **Omarchy** (Arch Linux with Hyprland, Wayland)
+- **macOS**
+
+The configs adapt to each one where needed: tmux picks the clipboard tool
+(`xclip`, `wl-copy` or `pbcopy`) and falls back to `screen-256color` where the
+`tmux-256color` terminal type is missing, and the Claude notification hook uses
+Notification Center on macOS instead of `notify-send`. Keep changes working on
+all three.
+
 ## Setup on a new machine
 
 1. Install the dependencies:
@@ -26,14 +40,22 @@ same file.
      which works if your terminal supports it.
    - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
      in `~/.bashrc`
-   - For the Claude notification hook (Linux desktop only): `jq`, `notify-send`
-     (libnotify), `paplay` (PulseAudio/PipeWire) and `gdbus`
+   - For the Claude notification hook: `jq` everywhere. On Linux also
+     `notify-send` (libnotify), `paplay` (PulseAudio/PipeWire) and `gdbus`; on
+     Arch, install `sound-theme-freedesktop` for the sounds. On macOS, allow
+     notifications for **Script Editor** in System Settings → Notifications,
+     since popups are sent through AppleScript
 2. Clone the repo and run the installer:
 
    ```bash
    git clone https://github.com/TeoIlie/dotfiles.git ~/2.Personal/dotfiles
    ~/2.Personal/dotfiles/install.sh
    ```
+
+   The repo can live anywhere; `~/2.Personal/dotfiles` is just where it is on
+   my machines, and the paths in this README assume it. `install.sh` finds the
+   repo from its own location and links to it by absolute path, so if you move
+   the repo later, run `install.sh` again to repoint the links.
 3. Add the Claude Code settings by hand, as described in [Claude Code](#claude-code).
 
 An existing config file at a target path is moved to

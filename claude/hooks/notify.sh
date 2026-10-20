@@ -18,10 +18,24 @@ title="Claude Code: ${project}${branch:+ ($branch)}"
 if [ "$event" = "Notification" ]; then
   body="${msg:-Needs your attention}"
   sound=/usr/share/sounds/freedesktop/stereo/bell.oga
+  mac_sound=Ping
 else
   body="Finished, waiting for your input"
   sound=/usr/share/sounds/freedesktop/stereo/complete.oga
+  mac_sound=Glass
 fi
+
+# macOS: Notification Center plays the sound and dismisses banners itself.
+# Text goes in as arguments so quotes in it can't break the AppleScript.
+if [ "$(uname)" = Darwin ]; then
+  osascript - "$title" "$body · session ${session:0:8}" "$mac_sound" >/dev/null 2>&1 <<'EOF'
+on run argv
+  display notification (item 2 of argv) with title (item 1 of argv) sound name (item 3 of argv)
+end run
+EOF
+  exit 0
+fi
+
 body="$body\nsession ${session:0:8}"
 
 paplay "$sound" 2>/dev/null &
