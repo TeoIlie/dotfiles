@@ -3,16 +3,13 @@
 My tmux, starship and Claude Code configs, kept in sync across machines with git
 and symlinks.
 
-| File in repo             | Linked to                      |
-| ------------------------ | ------------------------------ |
-| `tmux/tmux.conf`         | `~/.tmux.conf`                 |
-| `starship/starship.toml` | `~/.config/starship.toml`      |
-| `claude/mods/model-tail` | `~/.claude/mods/model-tail`    |
-| `claude/hooks/notify.sh` | `~/.claude/hooks/notify.sh`    |
+The real files live in this repo. `install.sh` symlinks each one to where its
+program expects it (the `LINKS` list at the top of the script shows what goes
+where), so editing either path edits the same file.
 
-The real files live in this repo. `install.sh` creates symlinks so each program
-finds its config where it expects it, which means editing either path edits the
-same file.
+tmux and starship share the Tokyo Night colours: `@tn_*` in `tmux.conf` and
+`[palettes.tokyo_night]` in `starship.toml` use the same names, so change a
+colour in both.
 
 ## Supported systems
 
@@ -22,11 +19,9 @@ Everything here should work on these three:
 - **Omarchy** (Arch Linux with Hyprland, Wayland)
 - **macOS**
 
-The configs adapt to each one where needed: tmux picks the clipboard tool
-(`xclip`, `wl-copy` or `pbcopy`) and falls back to `screen-256color` where the
-`tmux-256color` terminal type is missing, and the Claude notification hook uses
-Notification Center on macOS instead of `notify-send`. Keep changes working on
-all three.
+Platform differences are handled inside the configs themselves (`if-shell` in
+`tmux.conf`, a `uname` check in `notify.sh`), so keep changes working on all
+three.
 
 ## Setup on a new machine
 
@@ -55,14 +50,10 @@ all three.
    The repo can live anywhere; `~/2.Personal/dotfiles` is just where it is on
    my machines, and the paths in this README assume it. `install.sh` finds the
    repo from its own location and links to it by absolute path, so if you move
-   the repo later, run `install.sh` again to repoint the links.
+   the repo later, run `install.sh` again to repoint the links. Existing config
+   files are moved to `~/.dotfiles_backup/<timestamp>/` first, and re-running
+   the script is safe.
 3. Add the Claude Code settings by hand, as described in [Claude Code](#claude-code).
-
-An existing config file at a target path is moved to
-`~/.dotfiles_backup/<timestamp>/` before it's replaced. An existing symlink is
-simply replaced, since it holds no data; this also fixes stale links if you move
-the repo. The script is safe to re-run: links that are already in place are left
-alone.
 
 ## Daily usage
 
@@ -139,6 +130,6 @@ is ignored by git; the mod runs without it.
 
 1. Move the file into the repo, e.g. `mv ~/.config/foo/config ~/2.Personal/dotfiles/foo/config`.
 2. Add a line to `LINKS` in `install.sh`: `"foo/config:$HOME/.config/foo/config"`.
-3. Run `./install.sh`, update the table above, and commit.
+3. Run `./install.sh` and commit.
 
 Never commit secrets (tokens, SSH keys, `.env` files).
