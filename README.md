@@ -26,7 +26,7 @@ same file.
 2. Clone the repo and run the installer:
 
    ```bash
-   git clone git@github.com:<you>/dotfiles.git ~/2.Personal/dotfiles
+   git clone https://github.com/TeoIlie/dotfiles.git ~/2.Personal/dotfiles
    ~/2.Personal/dotfiles/install.sh
    ```
 
