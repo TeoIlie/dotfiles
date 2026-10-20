@@ -88,12 +88,20 @@ need to re-run `install.sh` after adding a new config to the repo.
 
 ## Claude Code
 
-The repo holds two Claude Code customizations:
+Two Claude Code customizations:
 
-- **`model-tail`**: a mod that shows the current model (e.g. "Opus 5.5") at the
-  end of the prompt hint line. The code is in `hooks/register.ts`.
-- **`notify.sh`**: a hook that plays a sound and shows a desktop popup when a
-  session finishes or needs your permission.
+- **`notify.sh`** (in the repo): a hook that plays a sound and shows a desktop
+  popup when a session finishes or needs your permission.
+- **Model name** (settings only): a `statusLine` that shows the current model,
+  dimmed, as `◆ Opus 5.5` on its own line under the prompt.
+
+The model name used to come from a mod (`model-tail`) that wrote it onto the end
+of the prompt hint line. That relied on Claude Code's internal UI hooks, whose
+props differ between versions: on 2.1.280 the mod loaded but was silently
+ignored. `statusLine` is a documented setting that Claude Code feeds session
+JSON (including `.model.display_name`), so it works the same everywhere. The
+cost is one extra line on screen. If you installed the mod earlier, delete
+`~/.claude/mods/model-tail` and the `CLAUDE_CODE_PLUGIN_DIRS` entry in `env`.
 
 `~/.claude/settings.json` is **not** synced. Claude Code rewrites it itself, and
 it holds machine- and work-specific settings that don't belong in a public repo.
@@ -102,8 +110,9 @@ exist), then restart Claude Code:
 
 ```json
 {
-  "env": {
-    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/model-tail"
+  "statusLine": {
+    "type": "command",
+    "command": "jq -r '\"\\u001b[2m◆ \" + (.model.display_name // \"unknown\") + \"\\u001b[0m\"'"
   },
   "hooks": {
     "Stop": [
@@ -122,9 +131,6 @@ exist), then restart Claude Code:
   "theme": "auto"
 }
 ```
-
-The mod's `.claude-plugin/types/` folder is generated editor type definitions and
-is ignored by git; the mod runs without it.
 
 ## Adding another config
 
