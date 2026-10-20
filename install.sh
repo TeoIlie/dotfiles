@@ -21,7 +21,11 @@ for entry in "${LINKS[@]}"; do
     continue
   fi
 
-  if [ -e "$dst" ] || [ -L "$dst" ]; then
+  # A symlink holds no data (e.g. a stale one left after moving this repo),
+  # so replace it directly; only real files get backed up.
+  if [ -L "$dst" ]; then
+    rm "$dst"
+  elif [ -e "$dst" ]; then
     mkdir -p "$BACKUP"
     mv "$dst" "$BACKUP/"
     echo "backup   $dst -> $BACKUP/"

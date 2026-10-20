@@ -17,15 +17,17 @@ same file.
    - [tmux](https://github.com/tmux/tmux) 3.2+ and [starship](https://starship.rs)
    - A [Nerd Font](https://www.nerdfonts.com) set as your terminal font (for the
      rounded segment caps and icons)
-   - `xclip` for copying to the clipboard (X11 only; on Wayland or macOS, change
-     `copy-command` in `tmux.conf`)
+   - A clipboard tool so tmux copies reach the system clipboard: `xclip` on X11,
+     `wl-clipboard` on Wayland (macOS has `pbcopy` built in). `tmux.conf` picks
+     whichever is available. Without one, as over SSH, tmux falls back to OSC 52,
+     which works if your terminal supports it.
    - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
      in `~/.bashrc`
 2. Clone the repo and run the installer:
 
    ```bash
-   git clone git@github.com:<you>/dotfiles.git ~/1.Projects/dotfiles
-   ~/1.Projects/dotfiles/install.sh
+   git clone git@github.com:<you>/dotfiles.git ~/2.Personal/dotfiles
+   ~/2.Personal/dotfiles/install.sh
    ```
 
 Any existing config at a target path is moved to
@@ -46,7 +48,7 @@ Starship picks up changes on the next prompt.
 **Save and share the change:**
 
 ```bash
-cd ~/1.Projects/dotfiles
+cd ~/2.Personal/dotfiles
 git add -A
 git commit -m "tmux: describe the change"
 git push
@@ -55,7 +57,7 @@ git push
 **Get changes on another machine:**
 
 ```bash
-cd ~/1.Projects/dotfiles
+cd ~/2.Personal/dotfiles
 git pull
 tmux source-file ~/.tmux.conf
 ```
@@ -65,7 +67,7 @@ need to re-run `install.sh` after adding a new config to the repo.
 
 ## Adding another config
 
-1. Move the file into the repo, e.g. `mv ~/.config/foo/config ~/1.Projects/dotfiles/foo/config`.
+1. Move the file into the repo, e.g. `mv ~/.config/foo/config ~/2.Personal/dotfiles/foo/config`.
 2. Add a line to `LINKS` in `install.sh`: `"foo/config:$HOME/.config/foo/config"`.
 3. Run `./install.sh`, update the table above, and commit.
 
