@@ -9,38 +9,45 @@ where), so editing either path edits the same file.
 
 ## Supported systems
 
-Everything here should work on these three:
+Linux only:
 
-- **Ubuntu** (GNOME, X11 or Wayland)
+- **Ubuntu** 24.04+ (GNOME, X11 or Wayland)
 - **Omarchy** (Arch Linux with Hyprland, Wayland)
-- **macOS**
 
-Platform differences are handled inside the configs themselves (a `uname` check
-in `notify.sh`), so keep changes working on all three.
+The same files are used on both, with no per-platform branches.
 
-`tmux.conf` is Omarchy's default tmux config, copied as is so it stays identical
-everywhere. It lives at `~/.config/tmux/tmux.conf`, where Omarchy puts it, so
-`prefix q` (reload) works on every machine. `prefix ?` opens Omarchy's
-keybinding menu and does nothing elsewhere. If you set up a machine with an
-older version of this repo, delete the `~/.tmux.conf` link, since tmux loads
-both files.
+`tmux.conf` is Omarchy's default tmux config. It lives at
+`~/.config/tmux/tmux.conf`, where Omarchy puts it, so `prefix q` (reload) works
+on every machine. The only change from Omarchy's version: `prefix ?` opens
+Omarchy's keybinding menu when it's installed and tmux's own key list
+otherwise.
+
+**Omarchy updates.** Omarchy owns `~/.config/tmux/tmux.conf` and
+`~/.config/starship.toml`. If an update rewrites them, it writes through the
+symlink into this repo. After updating, run `git -C ~/2.Personal/dotfiles status`
+and `git checkout -- <file>` to undo any change you don't want.
 
 ## Setup on a new machine
 
 1. Install the dependencies:
-   - [tmux](https://github.com/tmux/tmux) 3.2+ and [starship](https://starship.rs)
+
+   ```bash
+   # Ubuntu (starship isn't in 24.04's apt)
+   sudo apt install tmux jq libnotify-bin pulseaudio-utils sound-theme-freedesktop
+   curl -sS https://starship.rs/install.sh | sh
+
+   # Omarchy (most of these are preinstalled)
+   sudo pacman -S --needed tmux starship jq libnotify sound-theme-freedesktop
+   ```
+
+   You also need:
+   - tmux 3.3+ (for `display-popup -T` and `allow-passthrough`)
    - A [Nerd Font](https://www.nerdfonts.com) set as your terminal font (for the
      icons in the prompt's git status)
-   - A terminal that supports OSC 52 (e.g. Alacritty, Kitty, Ghostty, iTerm2):
-     tmux copies reach the system clipboard through the terminal
-     (`set-clipboard on`), with no separate clipboard tool.
-   - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
-     in `~/.bashrc`
-   - For the Claude notification hook: `jq` everywhere. On Linux also
-     `notify-send` (libnotify) and `paplay` (PulseAudio/PipeWire); on Arch,
-     install `sound-theme-freedesktop` for the sounds. On macOS, allow
-     notifications for **Script Editor** in System Settings → Notifications,
-     since popups are sent through AppleScript
+   - A terminal that supports OSC 52 (e.g. Alacritty, Kitty, Ghostty): tmux
+     copies reach the system clipboard through the terminal (`set-clipboard on`),
+     with no separate clipboard tool
+   - Starship enabled in your shell: `eval "$(starship init bash)"` in `~/.bashrc`
 2. Clone the repo and run the installer:
 
    ```bash
@@ -53,7 +60,8 @@ both files.
    repo from its own location and links to it by absolute path, so if you move
    the repo later, run `install.sh` again to repoint the links. Existing config
    files are moved to `~/.dotfiles_backup/<timestamp>/` first, and re-running
-   the script is safe.
+   the script is safe. At the end it lists any missing dependencies or
+   leftover files (like an old `~/.tmux.conf`); it doesn't install anything.
 3. Add the Claude Code settings by hand, as described in [Claude Code](#claude-code).
 
 ## Daily usage
@@ -97,13 +105,8 @@ Two Claude Code customizations:
 - **Model name** (settings only): a `statusLine` that shows the current model,
   dimmed, as `◆ Opus 5.5` on its own line under the prompt.
 
-The model name used to come from a mod (`model-tail`) that wrote it onto the end
-of the prompt hint line. That relied on Claude Code's internal UI hooks, whose
-props differ between versions: on 2.1.280 the mod loaded but was silently
-ignored. `statusLine` is a documented setting that Claude Code feeds session
-JSON (including `.model.display_name`), so it works the same everywhere. The
-cost is one extra line on screen. If you installed the mod earlier, delete
-`~/.claude/mods/model-tail` and the `CLAUDE_CODE_PLUGIN_DIRS` entry in `env`.
+If you used the old `model-tail` mod, delete `~/.claude/mods/model-tail` and the
+`CLAUDE_CODE_PLUGIN_DIRS` entry in `env`.
 
 `~/.claude/settings.json` is **not** synced. Claude Code rewrites it itself, and
 it holds machine- and work-specific settings that don't belong in a public repo.
