@@ -30,9 +30,11 @@ same file.
    ~/2.Personal/dotfiles/install.sh
    ```
 
-Any existing config at a target path is moved to
-`~/.dotfiles_backup/<timestamp>/` before it's replaced. The script is safe to
-re-run: links that are already in place are left alone.
+An existing config file at a target path is moved to
+`~/.dotfiles_backup/<timestamp>/` before it's replaced. An existing symlink is
+simply replaced, since it holds no data; this also fixes stale links if you move
+the repo. The script is safe to re-run: links that are already in place are left
+alone.
 
 ## Daily usage
 
