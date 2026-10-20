@@ -1,11 +1,14 @@
 # dotfiles
 
-My tmux and starship configs, kept in sync across machines with git and symlinks.
+My tmux, starship and Claude Code configs, kept in sync across machines with git
+and symlinks.
 
-| File in repo             | Linked to                   |
-| ------------------------ | --------------------------- |
-| `tmux/tmux.conf`         | `~/.tmux.conf`              |
-| `starship/starship.toml` | `~/.config/starship.toml`   |
+| File in repo             | Linked to                      |
+| ------------------------ | ------------------------------ |
+| `tmux/tmux.conf`         | `~/.tmux.conf`                 |
+| `starship/starship.toml` | `~/.config/starship.toml`      |
+| `claude/mods/model-tail` | `~/.claude/mods/model-tail`    |
+| `claude/hooks/notify.sh` | `~/.claude/hooks/notify.sh`    |
 
 The real files live in this repo. `install.sh` creates symlinks so each program
 finds its config where it expects it, which means editing either path edits the
@@ -23,12 +26,15 @@ same file.
      which works if your terminal supports it.
    - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
      in `~/.bashrc`
+   - For the Claude notification hook (Linux desktop only): `jq`, `notify-send`
+     (libnotify), `paplay` (PulseAudio/PipeWire) and `gdbus`
 2. Clone the repo and run the installer:
 
    ```bash
    git clone https://github.com/TeoIlie/dotfiles.git ~/2.Personal/dotfiles
    ~/2.Personal/dotfiles/install.sh
    ```
+3. Add the Claude Code settings by hand, as described in [Claude Code](#claude-code).
 
 An existing config file at a target path is moved to
 `~/.dotfiles_backup/<timestamp>/` before it's replaced. An existing symlink is
@@ -66,6 +72,46 @@ tmux source-file ~/.tmux.conf
 
 Pulled edits take effect immediately because the files are symlinked. You only
 need to re-run `install.sh` after adding a new config to the repo.
+
+## Claude Code
+
+The repo holds two Claude Code customizations:
+
+- **`model-tail`**: a mod that shows the current model (e.g. "Opus 5.5") at the
+  end of the prompt hint line. The code is in `hooks/register.ts`.
+- **`notify.sh`**: a hook that plays a sound and shows a desktop popup when a
+  session finishes or needs your permission.
+
+`~/.claude/settings.json` is **not** synced. Claude Code rewrites it itself, and
+it holds machine- and work-specific settings that don't belong in a public repo.
+On a new machine, merge these keys into it once (create the file if it doesn't
+exist), then restart Claude Code:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/model-tail"
+  },
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/hooks/notify.sh", "timeout": 10 }] }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [{ "type": "command", "command": "~/.claude/hooks/notify.sh", "timeout": 10 }]
+      }
+    ]
+  },
+  "model": "opus",
+  "editorMode": "vim",
+  "tui": "fullscreen",
+  "theme": "auto"
+}
+```
+
+The mod's `.claude-plugin/types/` folder is generated editor type definitions and
+is ignored by git; the mod runs without it.
 
 ## Adding another config
 

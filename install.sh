@@ -10,6 +10,8 @@ BACKUP="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)"
 LINKS=(
   "tmux/tmux.conf:$HOME/.tmux.conf"
   "starship/starship.toml:$HOME/.config/starship.toml"
+  "claude/mods/model-tail:$HOME/.claude/mods/model-tail"
+  "claude/hooks/notify.sh:$HOME/.claude/hooks/notify.sh"
 )
 
 for entry in "${LINKS[@]}"; do
