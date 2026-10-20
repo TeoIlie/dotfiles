@@ -3,6 +3,8 @@
 # already point here are skipped, and existing files are backed up first.
 set -euo pipefail
 
+[ "$(uname)" = Linux ] || { echo "Linux only (Ubuntu / Omarchy)"; exit 1; }
+
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)"
 
@@ -41,3 +43,14 @@ done
 if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
   tmux source-file "$HOME/.config/tmux/tmux.conf" && echo "reloaded tmux"
 fi
+
+# Warn about anything the configs need but this script doesn't install
+for cmd in tmux starship jq notify-send paplay; do
+  command -v "$cmd" >/dev/null || echo "missing  $cmd (see README)"
+done
+[ -e /usr/share/sounds/freedesktop/stereo/complete.oga ] ||
+  echo "missing  notification sounds (install sound-theme-freedesktop)"
+[ ! -e "$HOME/.tmux.conf" ] ||
+  echo "warning  ~/.tmux.conf exists and tmux loads it too; delete it"
+grep -qs "starship init" "$HOME/.bashrc" ||
+  echo "warning  starship isn't enabled in ~/.bashrc (see README)"
