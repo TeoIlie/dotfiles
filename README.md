@@ -18,14 +18,37 @@ The same files are used on both, with no per-platform branches.
 
 `tmux.conf` is Omarchy's default tmux config. It lives at
 `~/.config/tmux/tmux.conf`, where Omarchy puts it, so `prefix q` (reload) works
-on every machine. The only change from Omarchy's version: `prefix ?` opens
-Omarchy's keybinding menu when it's installed and tmux's own key list
-otherwise.
+on every machine. The comment at the top of the file lists what differs from
+Omarchy's version: mainly the `C-a` prefix (Omarchy ships `C-Space`), and
+`prefix ?` showing tmux's own key list when Omarchy isn't installed.
 
-**Omarchy updates.** Omarchy owns `~/.config/tmux/tmux.conf` and
-`~/.config/starship.toml`. If an update rewrites them, it writes through the
-symlink into this repo. After updating, run `git -C ~/2.Personal/dotfiles status`
-and `git checkout -- <file>` to undo any change you don't want.
+## Omarchy notes
+
+Omarchy owns `~/.config/tmux/tmux.conf` and `~/.config/starship.toml` and
+changes them in a few ways that matter here:
+
+- **Updates can break the links.** `omarchy-update` sometimes edits these
+  files. Most edits write through the symlink into this repo. Some (those using
+  `sed -i`) replace the symlink with a plain file instead, and the repo
+  silently stops tracking it. So after every `omarchy-update`, run:
+
+  ```bash
+  ~/2.Personal/dotfiles/install.sh          # relinks anything an update replaced
+  git -C ~/2.Personal/dotfiles status       # shows edits written into the repo
+  ```
+
+  If `install.sh` prints a `backup` line, an update replaced that link. Diff
+  the backed-up file against the repo to see what the update changed, and copy
+  over anything you want to keep. Use `git checkout -- <file>` to undo repo
+  edits you don't want.
+- **`omarchy-refresh-tmux` overwrites the repo copy.** It copies Omarchy's
+  default over `tmux.conf` through the link, which brings back the `C-Space`
+  prefix. Use `git checkout -- tmux/tmux.conf` to undo it.
+- **Themes still apply.** The tmux colours are named terminal colours (`blue`,
+  `brightblack`), so they follow whichever Omarchy theme is active.
+- **Starship is already enabled.** Omarchy's `~/.bashrc` sources Omarchy's
+  `default/bash/rc`, which runs `starship init`, so you don't need to add it.
+  `install.sh` recognises this.
 
 ## Setup on a new machine
 
@@ -48,6 +71,7 @@ and `git checkout -- <file>` to undo any change you don't want.
      copies reach the system clipboard through the terminal (`set-clipboard on`),
      with no separate clipboard tool
    - Starship enabled in your shell: `eval "$(starship init bash)"` in `~/.bashrc`
+     (Ubuntu only; Omarchy already does this)
 2. Clone the repo and run the installer:
 
    ```bash

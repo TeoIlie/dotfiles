@@ -52,5 +52,6 @@ done
   echo "missing  notification sounds (install sound-theme-freedesktop)"
 [ ! -e "$HOME/.tmux.conf" ] ||
   echo "warning  ~/.tmux.conf exists and tmux loads it too; delete it"
-grep -qs "starship init" "$HOME/.bashrc" ||
+# Omarchy's ~/.bashrc enables starship by sourcing Omarchy's default/bash/rc
+grep -qsE "starship init|/default/bash/rc" "$HOME/.bashrc" ||
   echo "warning  starship isn't enabled in ~/.bashrc (see README)"
