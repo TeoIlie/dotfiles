@@ -15,20 +15,25 @@ Everything here should work on these three:
 - **Omarchy** (Arch Linux with Hyprland, Wayland)
 - **macOS**
 
-Platform differences are handled inside the configs themselves (`if-shell` in
-`tmux.conf`, a `uname` check in `notify.sh`), so keep changes working on all
-three.
+Platform differences are handled inside the configs themselves (a `uname` check
+in `notify.sh`), so keep changes working on all three.
+
+`tmux.conf` is Omarchy's default tmux config, copied as is so it stays identical
+everywhere. It lives at `~/.config/tmux/tmux.conf`, where Omarchy puts it, so
+`prefix q` (reload) works on every machine. `prefix ?` opens Omarchy's
+keybinding menu and does nothing elsewhere. If you set up a machine with an
+older version of this repo, delete the `~/.tmux.conf` link, since tmux loads
+both files.
 
 ## Setup on a new machine
 
 1. Install the dependencies:
    - [tmux](https://github.com/tmux/tmux) 3.2+ and [starship](https://starship.rs)
    - A [Nerd Font](https://www.nerdfonts.com) set as your terminal font (for the
-     icons in the tmux status bar and the prompt's git status)
-   - A clipboard tool so tmux copies reach the system clipboard: `xclip` on X11,
-     `wl-clipboard` on Wayland (macOS has `pbcopy` built in). `tmux.conf` picks
-     whichever is available. Without one, as over SSH, tmux falls back to OSC 52,
-     which works if your terminal supports it.
+     icons in the prompt's git status)
+   - A terminal that supports OSC 52 (e.g. Alacritty, Kitty, Ghostty, iTerm2):
+     tmux copies reach the system clipboard through the terminal
+     (`set-clipboard on`), with no separate clipboard tool.
    - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
      in `~/.bashrc`
    - For the Claude notification hook: `jq` everywhere. On Linux also
@@ -57,7 +62,7 @@ three.
 (they're the same file), then reload:
 
 ```bash
-tmux source-file ~/.tmux.conf   # or: prefix + :source-file ~/.tmux.conf
+tmux source-file ~/.config/tmux/tmux.conf   # or: prefix + q
 ```
 
 Starship picks up changes on the next prompt.
@@ -76,7 +81,7 @@ git push
 ```bash
 cd ~/2.Personal/dotfiles
 git pull
-tmux source-file ~/.tmux.conf
+tmux source-file ~/.config/tmux/tmux.conf
 ```
 
 Pulled edits take effect immediately because the files are symlinked. You only

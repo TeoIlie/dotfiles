@@ -8,7 +8,7 @@ BACKUP="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)"
 
 # "source in repo:target on this machine"
 LINKS=(
-  "tmux/tmux.conf:$HOME/.tmux.conf"
+  "tmux/tmux.conf:$HOME/.config/tmux/tmux.conf"
   "starship/starship.toml:$HOME/.config/starship.toml"
   "claude/hooks/notify.sh:$HOME/.claude/hooks/notify.sh"
 )
@@ -39,5 +39,5 @@ done
 
 # Reload tmux if a server is running
 if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
-  tmux source-file "$HOME/.tmux.conf" && echo "reloaded tmux"
+  tmux source-file "$HOME/.config/tmux/tmux.conf" && echo "reloaded tmux"
 fi
