@@ -36,8 +36,8 @@ three.
    - Starship has to be enabled in your shell, e.g. `eval "$(starship init bash)"`
      in `~/.bashrc`
    - For the Claude notification hook: `jq` everywhere. On Linux also
-     `notify-send` (libnotify), `paplay` (PulseAudio/PipeWire) and `gdbus`; on
-     Arch, install `sound-theme-freedesktop` for the sounds. On macOS, allow
+     `notify-send` (libnotify) and `paplay` (PulseAudio/PipeWire); on Arch,
+     install `sound-theme-freedesktop` for the sounds. On macOS, allow
      notifications for **Script Editor** in System Settings → Notifications,
      since popups are sent through AppleScript
 2. Clone the repo and run the installer:
@@ -91,7 +91,8 @@ need to re-run `install.sh` after adding a new config to the repo.
 Two Claude Code customizations:
 
 - **`notify.sh`** (in the repo): a hook that plays a sound and shows a desktop
-  popup when a session finishes or needs your permission.
+  popup when a session finishes or needs your permission. Popups use normal
+  urgency, so they expire on their own and respect Do Not Disturb.
 - **Model name** (settings only): a `statusLine` that shows the current model,
   dimmed, as `◆ Opus 5.5` on its own line under the prompt.
 
