@@ -9,12 +9,13 @@ where), so editing either path edits the same file.
 
 ## Supported systems
 
-Linux only:
-
 - **Ubuntu** 24.04+ (GNOME, X11 or Wayland)
 - **Omarchy** (Arch Linux with Hyprland, Wayland)
+- **macOS** 15+ (zsh, Ghostty)
 
-The same files are used on both, with no per-platform branches.
+The same files are used everywhere. The only per-platform branches are the
+dependency checks at the end of `install.sh` and how `notify.sh` shows its
+popup (`osascript` on macOS, `notify-send` on Linux).
 
 `tmux.conf` is Omarchy's default tmux config. It lives at
 `~/.config/tmux/tmux.conf`, where Omarchy puts it, so `prefix q` (reload) works
@@ -50,6 +51,21 @@ changes them in a few ways that matter here:
   `default/bash/rc`, which runs `starship init`, so you don't need to add it.
   `install.sh` recognises this.
 
+## macOS notes
+
+- **Option as Alt.** The `M-…` tmux bindings (`M-Enter`, `M-1`…`M-9`,
+  `M-arrows`) need the Option key to send Alt. In Ghostty, add
+  `macos-option-as-alt = true` to its config (Cmd+, opens it).
+- **Old `~/.tmux.conf`.** tmux loads `~/.tmux.conf` as well as
+  `~/.config/tmux/tmux.conf`, so leftover settings from it (e.g. a different
+  `copy-command` or unbound keys) mix with this config. Move any existing one
+  aside before linking; `install.sh` warns if it's there.
+- **Notification permission.** `notify.sh` uses `osascript`, whose popups show
+  up as Script Editor. If none appear, allow them in System Settings →
+  Notifications → Script Editor.
+- **Clipboard.** tmux copies go through OSC 52, which works in Ghostty but not
+  in the VS Code terminal.
+
 ## Setup on a new machine
 
 1. Install the dependencies:
@@ -61,7 +77,16 @@ changes them in a few ways that matter here:
 
    # Omarchy (most of these are preinstalled)
    sudo pacman -S --needed tmux starship jq libnotify sound-theme-freedesktop
+
+   # macOS (jq ships with macOS 15)
+   brew install tmux
+   curl -sS https://starship.rs/install.sh | sh
    ```
+
+   Starship comes from its own installer rather than Homebrew because on Intel
+   Macs Homebrew may have no prebuilt package and builds from source:
+   `brew install starship` then compiles the whole Rust toolchain first (hours).
+   tmux builds from source in a few minutes if needed.
 
    You also need:
    - tmux 3.3+ (for `display-popup -T` and `allow-passthrough`)
@@ -71,7 +96,8 @@ changes them in a few ways that matter here:
      copies reach the system clipboard through the terminal (`set-clipboard on`),
      with no separate clipboard tool
    - Starship enabled in your shell: `eval "$(starship init bash)"` in `~/.bashrc`
-     (Ubuntu only; Omarchy already does this)
+     on Ubuntu (Omarchy already does this), or `eval "$(starship init zsh)"` in
+     `~/.zshrc` on macOS
 2. Clone the repo and run the installer:
 
    ```bash
@@ -124,8 +150,10 @@ need to re-run `install.sh` after adding a new config to the repo.
 Two Claude Code customizations:
 
 - **`notify.sh`** (in the repo): a hook that plays a sound and shows a desktop
-  popup when a session finishes or needs your permission. Popups use normal
-  urgency, so they expire on their own and respect Do Not Disturb.
+  popup when a session finishes or needs your permission. On Linux, popups use
+  normal urgency, so they expire on their own and respect Do Not Disturb. On
+  macOS they're regular Notification Center banners with the Glass (finished)
+  or Ping (needs permission) sound.
 - **Model name** (settings only): a `statusLine` that shows the current model,
   dimmed, as `◆ Opus 5.5` on its own line under the prompt.
 

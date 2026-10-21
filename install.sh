@@ -3,7 +3,10 @@
 # already point here are skipped, and existing files are backed up first.
 set -euo pipefail
 
-[ "$(uname)" = Linux ] || { echo "Linux only (Ubuntu / Omarchy)"; exit 1; }
+case "$(uname)" in
+  Linux|Darwin) ;;
+  *) echo "Linux or macOS only"; exit 1 ;;
+esac
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)"
@@ -45,13 +48,23 @@ if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
 fi
 
 # Warn about anything the configs need but this script doesn't install
-for cmd in tmux starship jq notify-send paplay; do
+for cmd in tmux starship jq; do
   command -v "$cmd" >/dev/null || echo "missing  $cmd (see README)"
 done
-[ -e /usr/share/sounds/freedesktop/stereo/complete.oga ] ||
-  echo "missing  notification sounds (install sound-theme-freedesktop)"
 [ ! -e "$HOME/.tmux.conf" ] ||
   echo "warning  ~/.tmux.conf exists and tmux loads it too; delete it"
-# Omarchy's ~/.bashrc enables starship by sourcing Omarchy's default/bash/rc
-grep -qsE "starship init|/default/bash/rc" "$HOME/.bashrc" ||
-  echo "warning  starship isn't enabled in ~/.bashrc (see README)"
+
+if [ "$(uname)" = Linux ]; then
+  for cmd in notify-send paplay; do
+    command -v "$cmd" >/dev/null || echo "missing  $cmd (see README)"
+  done
+  [ -e /usr/share/sounds/freedesktop/stereo/complete.oga ] ||
+    echo "missing  notification sounds (install sound-theme-freedesktop)"
+  # Omarchy's ~/.bashrc enables starship by sourcing Omarchy's default/bash/rc
+  grep -qsE "starship init|/default/bash/rc" "$HOME/.bashrc" ||
+    echo "warning  starship isn't enabled in ~/.bashrc (see README)"
+else
+  # macOS uses zsh by default
+  grep -qs "starship init" "$HOME/.zshrc" ||
+    echo "warning  starship isn't enabled in ~/.zshrc (see README)"
+fi
