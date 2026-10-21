@@ -60,9 +60,16 @@ changes them in a few ways that matter here:
   `~/.config/tmux/tmux.conf`, so leftover settings from it (e.g. a different
   `copy-command` or unbound keys) mix with this config. Move any existing one
   aside before linking; `install.sh` warns if it's there.
-- **Notification permission.** `notify.sh` uses `osascript`, whose popups show
-  up as Script Editor. If none appear, allow them in System Settings →
-  Notifications → Script Editor.
+- **Notification permission.** `notify.sh` uses `osascript`, whose popups count
+  as coming from Script Editor. Script Editor isn't listed in System Settings →
+  Notifications until it has asked for permission once, and running
+  `osascript` from a terminal never asks. To grant it, open Script Editor, run
+  `display notification "test"` (Cmd+R), and click **Allow**. Then check that
+  Script Editor has notifications and sounds turned on in System Settings.
+- **Focus must be off.** Do Not Disturb or any Focus mode (e.g. Work) silently
+  hides the popups and their sounds; `notify.sh` still exits 0, so nothing
+  looks broken. Turn Focus off, or add Script Editor to that Focus's allowed
+  apps.
 - **Clipboard.** tmux copies go through OSC 52, which works in Ghostty but not
   in the VS Code terminal.
 
