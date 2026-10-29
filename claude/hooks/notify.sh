@@ -21,12 +21,19 @@ else
 fi
 
 if [ "$(uname)" = Darwin ]; then
-  # Text goes in as arguments so quotes in it can't break the AppleScript.
-  osascript - "$title" "$body" "$mac_sound" >/dev/null 2>&1 <<'EOF'
+  # Custom-icon notifier built by make-notifier.sh; osascript popups always
+  # show Script Editor's icon.
+  notifier=~/Applications/ClaudeNotifier.app/Contents/MacOS/terminal-notifier
+  if [ -x "$notifier" ]; then
+    "$notifier" -title "$title" -message "$body" -sound "$mac_sound" >/dev/null 2>&1
+  else
+    # Text goes in as arguments so quotes in it can't break the AppleScript.
+    osascript - "$title" "$body" "$mac_sound" >/dev/null 2>&1 <<'EOF'
 on run argv
   display notification (item 2 of argv) with title (item 1 of argv) sound name (item 3 of argv)
 end run
 EOF
+  fi
 else
   paplay "/usr/share/sounds/freedesktop/stereo/$sound.oga" >/dev/null 2>&1 &
   notify-send -a "Claude Code" -u normal -t 5000 "$title" "$body" 2>/dev/null

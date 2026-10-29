@@ -15,7 +15,8 @@ where), so editing either path edits the same file.
 
 The same files are used everywhere. The only per-platform branches are the
 dependency checks at the end of `install.sh` and how `notify.sh` shows its
-popup (`osascript` on macOS, `notify-send` on Linux).
+popup (a custom-icon copy of terminal-notifier on macOS, falling back to
+`osascript`; `notify-send` on Linux).
 
 `tmux.conf` is Omarchy's default tmux config. It lives at
 `~/.config/tmux/tmux.conf`, where Omarchy puts it, so `prefix q` (reload) works
@@ -60,16 +61,18 @@ changes them in a few ways that matter here:
   `~/.config/tmux/tmux.conf`, so leftover settings from it (e.g. a different
   `copy-command` or unbound keys) mix with this config. Move any existing one
   aside before linking; `install.sh` warns if it's there.
-- **Notification permission.** `notify.sh` uses `osascript`, whose popups count
-  as coming from Script Editor. Script Editor isn't listed in System Settings →
-  Notifications until it has asked for permission once, and running
-  `osascript` from a terminal never asks. To grant it, open Script Editor, run
-  `display notification "test"` (Cmd+R), and click **Allow**. Then check that
-  Script Editor has notifications and sounds turned on in System Settings.
+- **Notification permission.** `notify.sh` posts through
+  `~/Applications/ClaudeNotifier.app` (see
+  [Custom notification icon](#custom-notification-icon-macos)). Run from a
+  terminal, it never gets a permission prompt: macOS marks it denied and it
+  exits 3. Turn on **Claude Code** in System Settings → Notifications by hand,
+  and again after each rebuild. Without the app, `notify.sh` falls back to
+  `osascript`, which posts as Script Editor; grant that by running
+  `display notification "test"` in Script Editor and clicking **Allow**.
 - **Focus must be off.** Do Not Disturb or any Focus mode (e.g. Work) silently
   hides the popups and their sounds; `notify.sh` still exits 0, so nothing
-  looks broken. Turn Focus off, or add Script Editor to that Focus's allowed
-  apps.
+  looks broken. Turn Focus off, or add Claude Code (or Script Editor, for the
+  fallback) to that Focus's allowed apps.
 - **Clipboard.** tmux copies go through OSC 52, which works in Ghostty but not
   in the VS Code terminal.
 
@@ -160,7 +163,7 @@ Two Claude Code customizations:
   popup when a session finishes or needs your permission. On Linux, popups use
   normal urgency, so they expire on their own and respect Do Not Disturb. On
   macOS they're regular Notification Center banners with the Glass (finished)
-  or Ping (needs permission) sound.
+  or Ping (needs permission) sound, and a custom icon (see below).
 - **Model name** (settings only): a `statusLine` that shows the current model,
   dimmed, as `◆ Opus 5.5` on its own line under the prompt.
 
@@ -195,6 +198,31 @@ exist), then restart Claude Code:
   "theme": "auto"
 }
 ```
+
+### Custom notification icon (macOS)
+
+macOS takes a notification's icon from the sending app, and terminal-notifier
+3.x dropped `-sender` and `-appIcon`. So `notify.sh` uses a copy of
+[terminal-notifier](https://github.com/julienXX/terminal-notifier) with its own
+icon and bundle ID:
+
+1. Download `terminal-notifier-3.1.0.zip` from the project's GitHub releases
+   and move `terminal-notifier.app` to `~/Applications`. (On Intel Macs
+   `brew install terminal-notifier` builds from source and needs full Xcode.)
+2. Build the copy from any square image, and re-run this to change the icon:
+
+   ```bash
+   ~/2.Personal/dotfiles/claude/hooks/make-notifier.sh /Applications/Ghostty.app/Contents/Resources/Ghostty.icns
+   ```
+
+3. Allow **Claude Code** in System Settings → Notifications, then test:
+
+   ```bash
+   ~/Applications/ClaudeNotifier.app/Contents/MacOS/terminal-notifier -message test; echo "exit $?"
+   ```
+
+   Exit 3 means permission is still off (`-diagnose` says why). If a banner
+   shows the old icon, `killall NotificationCenter` clears the cache.
 
 ## Adding another config
 

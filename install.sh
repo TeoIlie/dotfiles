@@ -67,4 +67,6 @@ else
   # macOS uses zsh by default
   grep -qs "starship init" "$HOME/.zshrc" ||
     echo "warning  starship isn't enabled in ~/.zshrc (see README)"
+  [ -x "$HOME/Applications/ClaudeNotifier.app/Contents/MacOS/terminal-notifier" ] ||
+    echo "missing  ClaudeNotifier.app; notify.sh falls back to osascript (see README)"
 fi
